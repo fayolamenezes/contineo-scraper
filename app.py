@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, send_file, redirect, url_for, flash
 from marks_scraper import scrape_and_generate_pdfs
 import os
+import traceback
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Required for flashing messages
+app.secret_key = 'your_secret_key_here'  # Replace with actual secure key
 
 @app.route('/')
 def index():
@@ -12,55 +13,39 @@ def index():
 @app.route('/generate', methods=['POST'])
 def generate():
     try:
+        # Get form data
         prn = request.form.get('prn', '').strip()
         day = request.form.get('day', '').strip()
         month = request.form.get('month', '').strip()
         year = request.form.get('year', '').strip()
-        
         include_marks = request.form.get('include_marks') == 'on'
         include_attendance = request.form.get('include_attendance') == 'on'
 
-        # Basic validation
+        # Validation
         if not (prn and day and month and year):
             flash("All fields are required.", "error")
             return redirect(url_for('index'))
         if not (include_marks or include_attendance):
-            flash("Select at least one: Marks or Attendance.", "error")
+            flash("Please select at least one: Marks or Attendance.", "error")
             return redirect(url_for('index'))
 
-        # Call updated function which returns paths to PDFs in a dict
+        # Scrape and generate PDF
         pdf_paths = scrape_and_generate_pdfs(prn, day, month, year, include_marks, include_attendance)
-
-        # If both selected, check for combined PDF first
         combined_pdf = pdf_paths.get("combined")
+
+        # Serve the PDF
         if combined_pdf and os.path.exists(combined_pdf):
-            return send_file(combined_pdf, as_attachment=True)
-
-        # Otherwise send marks PDF if requested
-        if include_marks:
-            marks_pdf = pdf_paths.get("marks")
-            if marks_pdf and os.path.exists(marks_pdf):
-                return send_file(marks_pdf, as_attachment=True)
-            else:
-                flash("Marks PDF not found.", "error")
-                return redirect(url_for('index'))
-
-        # Or send attendance PDF if requested
-        if include_attendance:
-            attendance_pdf = pdf_paths.get("attendance")
-            if attendance_pdf and os.path.exists(attendance_pdf):
-                return send_file(attendance_pdf, as_attachment=True)
-            else:
-                flash("Attendance PDF not found.", "error")
-                return redirect(url_for('index'))
-
-        # If none sent, fallback error
-        flash("PDF could not be generated. Try again.", "error")
-        return redirect(url_for('index'))
+            return send_file(combined_pdf,
+                             as_attachment=True,
+                             download_name=f"{prn}_report.pdf")
+        else:
+            flash("PDF could not be generated. Try again.", "error")
+            return redirect(url_for('index'))
 
     except Exception as e:
-        print(f"Error: {e}")
-        flash("Something went wrong while generating the PDF. Please check your inputs.", "error")
+        print("Error during PDF generation:")
+        traceback.print_exc()
+        flash("Something went wrong. Please verify your details and try again.", "error")
         return redirect(url_for('index'))
 
 if __name__ == "__main__":

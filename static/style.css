@@ -138,3 +138,51 @@ button[type="submit"]:hover {
   color: #166534;
   border: 1px solid #86efac;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 600px) {
+  body {
+    padding: 12px;
+  }
+
+  .container {
+    max-width: 100%;
+    margin: 20px auto;
+    padding: 24px 16px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+  }
+
+  .dob-selects {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .dob-selects select {
+    flex: 1 1 100%;
+  }
+
+  input[type="text"],
+  select {
+    font-size: 1rem;
+    padding: 10px 12px;
+  }
+
+  .checkbox-group {
+    padding: 16px 18px;
+  }
+
+  .checkbox-group label {
+    margin-right: 12px;
+    font-size: 0.9rem;
+  }
+
+  button[type="submit"] {
+    font-size: 1rem;
+    padding: 12px;
+  }
+}
