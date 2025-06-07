@@ -1,0 +1,7 @@
+Flask
+selenium
+chromedriver-autoinstaller
+matplotlib
+pandas
+beautifulsoup4
+gunicorn

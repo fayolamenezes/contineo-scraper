@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: marks-scraper
+    env: python
+    buildCommand: chmod +x start.sh && pip install -r requirements.txt
+    startCommand: ./start.sh
+    autoDeploy: true
