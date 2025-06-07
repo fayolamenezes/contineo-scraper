@@ -5,3 +5,4 @@ matplotlib
 pandas
 beautifulsoup4
 gunicorn
+waitress
